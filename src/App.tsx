@@ -1,12 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home.tsx';
-import About from './pages/About.tsx';
-import Contact from './pages/Contact.tsx';
-import HowItWorks from './pages/HowItWorks.tsx';
-import Privacy from './pages/Privacy.tsx';
-import Terms from './pages/Terms.tsx';
-import Security from './pages/Security.tsx';
-import ScrollToTop from './components/ScrollToTop.tsx';
+import Home from './pages/Home';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import HowItWorks from './pages/HowItWorks';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import Security from './pages/Security';
+import ScrollToTop from './components/ScrollToTop';
+import ChatBot from './components/Chatbot';
 
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -24,9 +25,8 @@ export default function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/security" element={<Security />} />
         </Routes>
+        <ChatBot />
       </Router>
     </ThemeProvider>
   );
 }
-
-

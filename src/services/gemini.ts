@@ -228,3 +228,18 @@ export async function extractInfo(url: string): Promise<ExtractedInfo> {
     throw new Error("The AI returned an invalid response format.");
   }
 }
+
+export async function* chatStream(message: string, history: { role: 'user' | 'model'; parts: { text: string }[] }[] = []) {
+  const chat = ai.chats.create({
+    model: "gemini-3-flash-preview",
+    history: history.length > 0 ? history : undefined,
+    config: {
+      systemInstruction: "You are LinkWise AI, a professional business intelligence assistant. You help users understand business data, web extraction results, and provide insights into companies. Be concise, professional, and helpful.",
+    }
+  });
+
+  const response = await chat.sendMessageStream({ message });
+  for await (const chunk of response) {
+    yield chunk.text || "";
+  }
+}

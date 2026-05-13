@@ -9,6 +9,7 @@ import {
   MapPin, 
   User, 
   Share2, 
+  MessageSquare,
   Loader2, 
   Search,
   Globe,
@@ -327,6 +328,21 @@ export default function Home() {
                       <p className="text-lg md:text-xl text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
                         {result.summary}
                       </p>
+
+                      <div className="mt-8 flex flex-wrap gap-4">
+                        <button 
+                          onClick={() => {
+                            const event = new CustomEvent('open-linkwise-chat', { 
+                              detail: { message: `I just extracted info from ${url}. Can you tell me more about their market position?` } 
+                            });
+                            window.dispatchEvent(event);
+                          }}
+                          className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-black text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-200 dark:shadow-none text-sm group"
+                        >
+                          <MessageSquare size={18} className="group-hover:rotate-12 transition-transform" />
+                          Chat with AI about this
+                        </button>
+                      </div>
                       
                       {result.companyInfo && (
                         <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800 grid grid-cols-2 md:grid-cols-3 gap-6">
@@ -457,7 +473,7 @@ export default function Home() {
                       </div>
 
                       <div className="space-y-6">
-                        {result.insights.competitors.map((comp: any, idx: number) => (
+                        {result.insights.competitors.map((comp, idx) => (
                           <div key={idx} className="group p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all">
                             <div className="flex items-center justify-between mb-2">
                               <span className="font-bold text-indigo-400">{comp.name}</span>
