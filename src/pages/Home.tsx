@@ -455,7 +455,7 @@ export default function Home() {
                       </div>
 
                       <div className="space-y-6">
-                        {result.insights.competitors.map((comp, idx) => (
+                        {result.insights.competitors.map((comp: any, idx: number) => (
                           <div key={idx} className="group p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all">
                             <div className="flex items-center justify-between mb-2">
                               <span className="font-bold text-indigo-400">{comp.name}</span>

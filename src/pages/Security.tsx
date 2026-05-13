@@ -1,8 +1,6 @@
-import React from 'react';
 import { motion } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 import { Lock } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
