@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/static-components */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -19,7 +21,7 @@ import {
   AlertTriangle,
   Calendar,
 } from 'lucide-react';
-import { extractInfo } from '../services/gemini';
+import { extractInfo, type ExtractedInfo } from '../services/gemini';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 

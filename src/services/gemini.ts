@@ -223,7 +223,7 @@ export async function extractInfo(url: string): Promise<ExtractedInfo> {
 
   try {
     return JSON.parse(text);
-  } catch (e) {
+  } catch {
     console.error("Failed to parse Gemini response:", text);
     throw new Error("The AI returned an invalid response format.");
   }
