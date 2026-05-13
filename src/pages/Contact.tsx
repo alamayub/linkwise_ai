@@ -11,7 +11,7 @@ export default function Contact() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate API call
+    // Simulate API calls and processing time
     setTimeout(() => {
       setLoading(false);
       setIsSubmitted(true);
