@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Helmet } from 'react-helmet-async';
 import { Mail, MessageSquare, Send, Globe, Loader2, CheckCircle } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -11,7 +12,7 @@ export default function Contact() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate API calls and processing time
+    // Simulate API call
     setTimeout(() => {
       setLoading(false);
       setIsSubmitted(true);
@@ -20,6 +21,10 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-black text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      <Helmet>
+        <title>Contact Us | LinkWise AI Support & Inquiries</title>
+        <meta name="description" content="Get in touch with the LinkWise AI team for custom business intelligence solutions, volume processing, or general inquiries." />
+      </Helmet>
       <Header />
       <div className="max-w-4xl mx-auto py-20 px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">

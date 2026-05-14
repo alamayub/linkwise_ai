@@ -1,3 +1,5 @@
+/* eslint-disable preserve-caught-error */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { GoogleGenAI, Type } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -26,8 +28,8 @@ export interface ExtractedInfo {
   };
   reputation: {
     latestNews: { title: string; date?: string; url?: string }[];
-    awards: { title: string; year?: string }[];
-    controversies: { description: string; impact?: string }[];
+    awards: { title: string; year?: string; url?: string }[];
+    controversies: { description: string; impact?: string; url?: string }[];
     upcomingEvents: { name: string; date?: string; description?: string }[];
   };
   metadata: {
@@ -40,25 +42,100 @@ export interface ExtractedInfo {
   sentiment?: 'positive' | 'neutral' | 'negative';
 }
 
-export async function extractInfo(url: string): Promise<ExtractedInfo> {
-  const response = await ai.models.generateContent({
+async function callGemini(params: any) {
+  try {
+    const result = await ai.models.generateContent(params);
+    return result;
+  } catch (error: any) {
+    const status = error?.status || (error?.message?.includes('429') ? 429 : error?.message?.includes('403') ? 403 : null);
+    
+    if (status === 429) {
+      throw new Error("RATE_LIMIT_EXCEEDED: LinkWise AI is receiving too many requests. This usually resets every 60 seconds for free tier users. Please wait a moment and click extract again to retry.");
+    }
+    if (status === 403) {
+      throw new Error("PERMISSION_DENIED: Access restricted. Your Gemini API key may lack the 'Google Search' permission or requires a billing-enabled account for search-enhanced extraction. Check Settings > Secrets.");
+    }
+    
+    throw new Error(`API_ERROR: ${error.message || "An unexpected error occurred while communicating with Gemini."}`);
+  }
+}
+
+export async function generateOutreach(
+  info: ExtractedInfo, 
+  platform: string,
+  options?: {
+    targetRole?: string;
+    cta?: string;
+    focusPainPoint?: string;
+  }
+): Promise<string> {
+  const entityName = info.companyInfo?.name || "the company";
+  const { targetRole, cta, focusPainPoint } = options || {};
+
+  const response = await callGemini({
+    model: "gemini-3-flash-preview",
+    contents: `Generate a professional outreach message specifically for ${platform} addressed TO ${entityName}.
+               
+               COMPANY DATA:
+               - Entity: ${entityName}
+               - Industry: ${info.companyInfo?.industry}
+               - Strategic Gaps: ${info.insights.improvementSuggestions.join(", ")}
+               - Missing Elements: ${info.insights.missingElements.join(", ")}
+               
+               OUTREACH PARAMETERS:
+               - Target Role: ${targetRole || "Decision Maker"}
+               - Call to Action: ${cta || "Start a conversation"}
+               - Focus Pain Point: ${focusPainPoint || "general business optimization"}
+               
+               GUIDELINES:
+               1. PLATFORM-SPECIFIC: Optimize for ${platform}. If it's X/Twitter, keep it within character limits. If it's Email, include a compelling subject line.
+               2. STRATEGY-FIRST: Highlight the specific business gaps identified above, especially those related to ${focusPainPoint || 'their strategic growth'}.
+               3. TONE: Professional, consultative, and value-driven.
+               4. RECIPIENT: Use "${targetRole ? `Hi ${targetRole} at ${entityName}` : `Hi ${entityName} Team`}" as the greeting.
+               5. GOAL: Finalize with a clear call to action: ${cta || 'Would you be open to a brief chat about these optimizations?'}.
+               
+               Return ONLY the message content as plain text. If it's an email, start with "Subject: [Subject Line]" followed by the body.`,
+    config: {
+      // No search/tools needed for drafting
+    }
+  });
+
+  const text = response.text;
+  if (!text) {
+    throw new Error("Failed to generate outreach message.");
+  }
+
+  return text;
+}
+
+export async function extractInfo(url: string, depth: 'quick' | 'deep' = 'quick'): Promise<ExtractedInfo> {
+  const depthInstructions = depth === 'quick' 
+    ? `EFFICIENCY PROTOCOL (QUICK SCAN):
+       1. Focus only on the provided domain and its main landing page.
+       2. DO NOT exceed 5 total URL lookups. Stop early if core data is found.
+       3. Extract surface-level business info, basic contact details, and primary social handles.
+       4. Prioritize speed over deep historical data.`
+    : `EFFICIENCY PROTOCOL (DEEP DIVE):
+       1. Explore multiple layers of the provided domain (About, Contact, Press, History, Team).
+       2. Use up to 25 total URL lookups to build a comprehensive footprint.
+       3. Deeply search for historical news, specific awards, controversies, and key associated persons.
+       4. Analyze the competitive landscape and strategic gaps with higher granularity.`;
+
+  const response = await callGemini({
     model: "gemini-3-flash-preview",
     contents: `Thoroughly analyze the primary entity at: ${url}. 
                
-               EFFICIENCY PROTOCOL:
-               1. Focus only on the provided domain and its main About/Contact pages.
-               2. DO NOT exceed 15 total URL lookups. Stop early if core data is found.
-               3. If a social handle is found, do NOT crawl the social platform deeply; just verify the handle and moves on.
+               ${depthInstructions}
                
                EXTRACTION GOALS:
-               - SOCIAL: Find major profiles. Mark isVerified if highly confident (official badges/high follower count).
+               - SOCIAL: Find major profiles. Mark isVerified if highly confident.
                - REPUTATION: Significant news, major awards, known controversies, and key events.
                - BUSINESS: Basic info, offerings, competitors, and strategic gaps.
                - CONTACT: Emails, phones, addresses, and hours.
-
-               Omit fields that require deep specialized crawling (like specific case studies or sub-pages) to save quota.`,
+ 
+               Omit fields that require deep specialized crawling to save quota.`,
     config: {
-      tools: [{ urlContext: {} }],
+      tools: [{ googleSearch: {} }], // Use googleSearch instead of urlContext for broader compatibility
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -168,7 +245,8 @@ export async function extractInfo(url: string): Promise<ExtractedInfo> {
                   type: Type.OBJECT,
                   properties: {
                     title: { type: Type.STRING },
-                    year: { type: Type.STRING }
+                    year: { type: Type.STRING },
+                    url: { type: Type.STRING }
                   },
                   required: ["title"]
                 }
@@ -179,7 +257,8 @@ export async function extractInfo(url: string): Promise<ExtractedInfo> {
                   type: Type.OBJECT,
                   properties: {
                     description: { type: Type.STRING },
-                    impact: { type: Type.STRING }
+                    impact: { type: Type.STRING },
+                    url: { type: Type.STRING }
                   },
                   required: ["description"]
                 }
@@ -238,8 +317,20 @@ export async function* chatStream(message: string, history: { role: 'user' | 'mo
     }
   });
 
-  const response = await chat.sendMessageStream({ message });
-  for await (const chunk of response) {
-    yield chunk.text || "";
+  try {
+    const response = await chat.sendMessageStream({ message });
+    for await (const chunk of response) {
+      yield chunk.text || "";
+    }
+  } catch (error: any) {
+    const status = error?.status || (error?.message?.includes('429') ? 429 : error?.message?.includes('403') ? 403 : null);
+    
+    if (status === 429) {
+      yield "RATE_LIMIT_EXCEEDED: LinkWise AI is currently experiencing high usage. Please wait about 60 seconds and try sending your message again. AI quotas reset frequently!";
+    } else if (status === 403) {
+      yield "PERMISSION_DENIED: Access restricted. Please check your Gemini API key in Settings > Secrets. You may need a billing-enabled key or specific search permissions enabled.";
+    } else {
+      yield "I encountered an error. Please check your connection or API key and try again.";
+    }
   }
 }

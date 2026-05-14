@@ -1,4 +1,6 @@
+import React from 'react';
 import { motion } from 'motion/react';
+import { Helmet } from 'react-helmet-async';
 import { Search, Cpu, Database, Fingerprint, Zap, ShieldCheck } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -33,6 +35,10 @@ export default function HowItWorks() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-black text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      <Helmet>
+        <title>How It Works | LinkWise AI Pipeline & Methodology</title>
+        <meta name="description" content="Discover the neural extraction pipeline and methodology behind LinkWise AI's deep URL intelligence." />
+      </Helmet>
       <Header />
       
       <main className="max-w-4xl mx-auto py-20 px-4">

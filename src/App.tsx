@@ -7,7 +7,7 @@ import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Security from './pages/Security';
 import ScrollToTop from './components/ScrollToTop';
-import ChatBot from './components/Chatbot';
+import ChatBot from './components/ChatBot';
 
 import { ThemeProvider } from './context/ThemeContext';
 

@@ -1,4 +1,6 @@
+import React from 'react';
 import { motion } from 'motion/react';
+import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
 import { Lock } from 'lucide-react';
 import Header from '../components/Header';
@@ -33,6 +35,10 @@ We follow a zero-trust security model, ensuring that every request is authentica
 export default function Security() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-black text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      <Helmet>
+        <title>Security | LinkWise AI Platform Integrity</title>
+        <meta name="description" content="Discover how LinkWise AI ensures platform security, data encryption, and AI safety." />
+      </Helmet>
       <Header />
       <div className="max-w-4xl mx-auto py-20 px-4">
         <header className="mb-16">

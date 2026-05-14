@@ -1,4 +1,6 @@
+import React from 'react';
 import { motion } from 'motion/react';
+import { Helmet } from 'react-helmet-async';
 import { Globe, ShieldCheck, Zap, Cpu } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
@@ -25,6 +27,10 @@ export default function About() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-black text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      <Helmet>
+        <title>About Us | LinkWise AI Mission & Values</title>
+        <meta name="description" content="Learn about LinkWise AI's mission to turn the unstructured web into high-fidelity business intelligence." />
+      </Helmet>
       <Header />
       <div className="max-w-4xl mx-auto py-20 px-4">
         

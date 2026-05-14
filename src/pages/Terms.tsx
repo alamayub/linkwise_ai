@@ -1,4 +1,6 @@
+import React from 'react';
 import { motion } from 'motion/react';
+import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
 import { FileText } from 'lucide-react';
 import Header from '../components/Header';
@@ -40,6 +42,10 @@ If you have questions about these terms, contact us at legal@linkwise.ai.
 export default function Terms() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-black text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      <Helmet>
+        <title>Terms of Service | LinkWise AI Usage Agreements</title>
+        <meta name="description" content="Read the terms and conditions for using LinkWise AI's deep intelligence extraction platform." />
+      </Helmet>
       <Header />
       <div className="max-w-4xl mx-auto py-20 px-4">
         <header className="mb-16">

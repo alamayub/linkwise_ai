@@ -1,4 +1,6 @@
+import React from 'react';
 import { motion } from 'motion/react';
+import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
 import { Shield } from 'lucide-react';
 import Header from '../components/Header';
@@ -37,6 +39,10 @@ If you have any questions about this Privacy Policy, please contact us at privac
 export default function Privacy() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-black text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      <Helmet>
+        <title>Privacy Policy | LinkWise AI Data Protection</title>
+        <meta name="description" content="Learn about how LinkWise AI collects, uses, and safeguards your information in our privacy policy." />
+      </Helmet>
       <Header />
       <div className="max-w-4xl mx-auto py-20 px-4">
         <header className="mb-16">
