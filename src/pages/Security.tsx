@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'motion/react';
 import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
